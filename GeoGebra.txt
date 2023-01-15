@@ -1,0 +1,482 @@
+package geogebra;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.lang.Math;
+
+public class GeoGebra extends javax.swing.JFrame {
+
+    /**
+     * Creates new form GeoGebra
+     */
+    private int index = 0;
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public GeoGebra() {
+        initComponents();
+    }
+
+    public String insertStr(String firstStr, int startIndex, int endIndex, String insertedStr) {
+        String finalStr = "";
+        boolean isInserted = false;
+        for (int i = 0; i < firstStr.length(); i++) {
+            if (i < startIndex || i > endIndex) {
+                finalStr += firstStr.charAt(i);
+            } else if (isInserted == false) {
+                finalStr += insertedStr;
+                isInserted = true;
+            }
+        }
+        return finalStr;
+    }
+
+    public String lowC(char symbol, int i, String expr) {
+        String temp = "";
+        boolean isFound = false;
+        int j = i, k = i;
+        while (isFound == false && j < expr.length() - 1) {
+            if (!(expr.charAt(j + 1) == '+' || expr.charAt(j + 1) == '*'
+                    || expr.charAt(j + 1) == '/' || expr.charAt(j + 1) == '^')) {
+                j++;
+            } else {
+                isFound = true;
+            }
+        }
+        isFound = false;
+        while (isFound == false && k > 0) {
+            if (!(expr.charAt(k - 1) == '+' || expr.charAt(k) == '-' || expr.charAt(k - 1) == '*'
+                    || expr.charAt(k - 1) == '/' || expr.charAt(k - 1) == '^')) {
+                k--;
+            } else {
+                isFound = true;
+            }
+        }
+        switch (symbol) {
+            case '+':
+                temp = (Double.parseDouble(expr.substring(k, i)) + Double.parseDouble(expr.substring(i + 1, j + 1))) + "";
+                break;
+            case '*':
+                temp = (Double.parseDouble(expr.substring(k, i)) * Double.parseDouble(expr.substring(i + 1, j + 1))) + "";
+                break;
+            case '/':
+                temp = (Double.parseDouble(expr.substring(k, i)) / Double.parseDouble(expr.substring(i + 1, j + 1))) + "";
+                break;
+            case '^':
+                temp = Math.pow(Double.parseDouble(expr.substring(k, i)), Double.parseDouble(expr.substring(i + 1, j + 1))) + "";
+                break;
+        }
+        expr = insertStr(expr, k, j, temp);
+        this.setIndex(k);
+        return expr;
+    }
+
+    public int highC(String expr) {
+        for (int i = 0; i < expr.length(); i++) {
+            if (expr.charAt(i) == '^') {
+                expr = lowC(expr.charAt(i), i, expr);
+                i = this.getIndex();
+            }
+        }
+        for (int i = 0; i < expr.length(); i++) {
+            if (expr.charAt(i) == '*' || expr.charAt(i) == '/') {
+                expr = lowC(expr.charAt(i), i, expr);
+                i = this.getIndex();
+            }
+        }
+        for (int i = 0; i < expr.length(); i++) {
+            if (expr.charAt(i) == '+') {
+                expr = lowC(expr.charAt(i), i, expr);
+                i = this.getIndex();
+            }
+        }
+        return (int) Double.parseDouble(expr);
+    }
+
+    public String swapX(String expr, double x) {
+        for (int i = 0; i < expr.length(); i++) {
+            if (expr.charAt(i) == 'x') {
+                expr = insertStr(expr, i, i, x + "");
+            }
+        }
+        for (int i = 0; i < expr.length(); i++) {
+            if (expr.charAt(i) == '-' && expr.charAt(i + 1) == '-') {
+                expr = insertStr(expr, i, i + 1, "");
+            }
+        }
+        return expr;
+    }
+
+    public int funcX(String expr, double x) {
+        int y = -1 * highC(swapX(expr, x));
+        return y;
+    }
+    
+    public String proverka(java.awt.event.KeyEvent evt){
+        if (evt.getKeyChar() == '1' || evt.getKeyChar() == '2' || evt.getKeyChar() == '3'
+                || evt.getKeyChar() == '4' || evt.getKeyChar() == '5'
+                || evt.getKeyChar() == '6' || evt.getKeyChar() == '7'
+                || evt.getKeyChar() == '8' || evt.getKeyChar() == '9'
+                || evt.getKeyChar() == '0' || evt.getKeyChar() == 'x') {
+            if (lblExpr.getText().length() > 0) {
+                if ((evt.getKeyChar() != 'x' && lblExpr.getText().charAt(lblExpr.getText().length() - 1) != 'x')
+                        || (evt.getKeyChar() == 'x' && (lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                        || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '-'
+                        || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                        || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                        || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^'))) {
+                    return (lblExpr.getText() + "" + evt.getKeyChar());
+                }
+            } else {
+                return (lblExpr.getText() + "" + evt.getKeyChar());
+            }
+        }
+        return lblExpr.getText();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        pnlTable = new javax.swing.JPanel();
+        lblExpr = new javax.swing.JLabel();
+        btnPlus = new javax.swing.JButton();
+        btnMin = new javax.swing.JButton();
+        btnMulti = new javax.swing.JButton();
+        btnDiv = new javax.swing.JButton();
+        btnDeg = new javax.swing.JButton();
+        btnDel = new javax.swing.JButton();
+        btnComp = new javax.swing.JButton();
+        pnlGraph = new javax.swing.JPanel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        btnPlus.setText("+");
+        btnPlus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlusActionPerformed(evt);
+            }
+        });
+        btnPlus.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnPlusKeyPressed(evt);
+            }
+        });
+
+        btnMin.setText("-");
+        btnMin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMinActionPerformed(evt);
+            }
+        });
+        btnMin.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnMinKeyPressed(evt);
+            }
+        });
+
+        btnMulti.setText("*");
+        btnMulti.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMultiActionPerformed(evt);
+            }
+        });
+        btnMulti.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnMultiKeyPressed(evt);
+            }
+        });
+
+        btnDiv.setText("/");
+        btnDiv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDivActionPerformed(evt);
+            }
+        });
+        btnDiv.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnDivKeyPressed(evt);
+            }
+        });
+
+        btnDeg.setText("^");
+        btnDeg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDegActionPerformed(evt);
+            }
+        });
+        btnDeg.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnDegKeyPressed(evt);
+            }
+        });
+
+        btnDel.setText("Backspace");
+        btnDel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDelActionPerformed(evt);
+            }
+        });
+        btnDel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnDelKeyPressed(evt);
+            }
+        });
+
+        btnComp.setText("Show graph");
+        btnComp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCompActionPerformed(evt);
+            }
+        });
+        btnComp.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btnCompKeyPressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlTableLayout = new javax.swing.GroupLayout(pnlTable);
+        pnlTable.setLayout(pnlTableLayout);
+        pnlTableLayout.setHorizontalGroup(
+            pnlTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlTableLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblExpr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(pnlTableLayout.createSequentialGroup()
+                        .addComponent(btnPlus, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnMulti, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDiv, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDeg, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnDel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnComp, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        pnlTableLayout.setVerticalGroup(
+            pnlTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlTableLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblExpr, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnlTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnlTableLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnPlus, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMin, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMulti, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDiv, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDeg, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnComp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout pnlGraphLayout = new javax.swing.GroupLayout(pnlGraph);
+        pnlGraph.setLayout(pnlGraphLayout);
+        pnlGraphLayout.setHorizontalGroup(
+            pnlGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 750, Short.MAX_VALUE)
+        );
+        pnlGraphLayout.setVerticalGroup(
+            pnlGraphLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 408, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlTable, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(pnlGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(pnlTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void btnDivActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        if (lblExpr.getText().length() > 0) {
+            if (!(lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '-'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^')) {
+                lblExpr.setText(lblExpr.getText() + "/");
+            }
+        }
+    }                                      
+
+    private void btnPlusActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        if (lblExpr.getText().length() > 0) {
+            if (!(lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '-'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^')) {
+                lblExpr.setText(lblExpr.getText() + "+");
+            }
+        }
+    }                                       
+
+    private void btnMinActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        if (lblExpr.getText().length() > 0) {
+            if (lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^') {
+                lblExpr.setText(lblExpr.getText() + "-");
+            }
+        } else if (lblExpr.getText().length() == 0) {
+            lblExpr.setText(lblExpr.getText() + "-");
+        }
+    }                                      
+
+    private void btnMultiActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        if (lblExpr.getText().length() > 0) {
+            if (!(lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '-'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^')) {
+                lblExpr.setText(lblExpr.getText() + "*");
+            }
+        }
+    }                                        
+
+    private void btnDegActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        if (lblExpr.getText().length() > 0) {
+            if (!(lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '+'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '-'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '*'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '/'
+                    || lblExpr.getText().charAt(lblExpr.getText().length() - 1) == '^')) {
+                lblExpr.setText(lblExpr.getText() + "^");
+            }
+        }
+    }                                      
+
+    private void btnDelActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        if (lblExpr.getText().length() > 0) {
+            lblExpr.setText(lblExpr.getText().substring(0, lblExpr.getText().length() - 1));
+        }
+    }                                      
+
+    private void btnPlusKeyPressed(java.awt.event.KeyEvent evt) {                                   
+        lblExpr.setText(proverka(evt));
+    }                                  
+
+    private void btnMinKeyPressed(java.awt.event.KeyEvent evt) {                                  
+        lblExpr.setText(proverka(evt));
+    }                                 
+
+    private void btnMultiKeyPressed(java.awt.event.KeyEvent evt) {                                    
+        lblExpr.setText(proverka(evt));
+    }                                   
+
+    private void btnDivKeyPressed(java.awt.event.KeyEvent evt) {                                  
+        lblExpr.setText(proverka(evt));
+    }                                 
+
+    private void btnDegKeyPressed(java.awt.event.KeyEvent evt) {                                  
+        lblExpr.setText(proverka(evt));
+    }                                 
+
+    private void btnDelKeyPressed(java.awt.event.KeyEvent evt) {                                  
+        lblExpr.setText(proverka(evt));
+    }                                 
+
+    private void btnCompActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        int x = 0, y = 0, y1 = 0;
+        String expr = lblExpr.getText();
+        Graphics g = pnlGraph.getGraphics();
+        pnlGraph.setBackground(Color.DARK_GRAY);
+        g.setColor(Color.LIGHT_GRAY);
+        g.drawLine(pnlGraph.getWidth() / 2, 0, pnlGraph.getWidth() / 2, pnlGraph.getHeight());
+        g.drawLine(0, pnlGraph.getHeight() / 2, pnlGraph.getWidth(), pnlGraph.getHeight() / 2);
+        if (expr != "") {
+        	for (x = -1 * pnlGraph.getWidth() / 2; x < pnlGraph.getWidth() / 2; x += 1) {
+        		y = funcX(expr, x);
+            	y1 = funcX(expr, x + 1);
+            	g.drawLine(x + pnlGraph.getWidth() / 2, y + pnlGraph.getHeight() / 2, x + 1 + pnlGraph.getWidth() / 2, y1 + pnlGraph.getHeight() / 2);
+        	}
+        }
+        
+    }                                       
+
+    private void btnCompKeyPressed(java.awt.event.KeyEvent evt) {                                   
+        lblExpr.setText(lblExpr.getText() + "" + evt.getKeyChar());
+    }                                  
+
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GeoGebra.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GeoGebra.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GeoGebra.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GeoGebra.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new GeoGebra().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JButton btnComp;
+    private javax.swing.JButton btnDeg;
+    private javax.swing.JButton btnDel;
+    private javax.swing.JButton btnDiv;
+    private javax.swing.JButton btnMin;
+    private javax.swing.JButton btnMulti;
+    private javax.swing.JButton btnPlus;
+    private javax.swing.JLabel lblExpr;
+    private javax.swing.JPanel pnlGraph;
+    private javax.swing.JPanel pnlTable;
+    // End of variables declaration                   
+}
